@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ECO IDOL 🌱</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+:root {
+  --mint:#a3f7bf;
+  --pink:#ffb8d2;
+  --cream:#fffaf3;
+  --yellow:#fff4a3;
+  --dark:#34323d;
+  --neon:#6ef7ff;
+  --space:#c9b8ff;
+  --radius:20px;
+  --transition:0.3s ease;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body {
+  font-family:'Nunito',sans-serif;
+  background:linear-gradient(180deg,#ffeef6,#fafff3);
+  color:var(--dark);
+  display:flex;flex-direction:column;align-items:center;
+  min-height:100vh;padding:20px;transition:background 0.5s;
+}
+header{background:var(--cream);border-radius:var(--radius);box-shadow:0 6px 15px rgba(0,0,0,0.05);padding:15px 25px;text-align:center;margin-bottom:20px;}
+h1{font-size:1.8rem;background:linear-gradient(90deg,var(--mint),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900;}
+h2{font-size:1rem;color:#777;margin-top:6px;}
+.video-container{margin:15px auto;width:90%;max-width:560px;border-radius:var(--radius);overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+.video-container iframe{width:100%;height:315px;}
+.stage{background:var(--cream);border-radius:var(--radius);box-shadow:0 8px 20px rgba(0,0,0,0.08);padding:25px;width:100%;max-width:520px;text-align:center;position:relative;overflow:hidden;margin-bottom:15px;}
+.idol{font-size:80px;margin-bottom:10px;transition:transform 0.4s ease;}
+.idol.jump{transform:translateY(-25px) scale(1.1);}
+.score{font-size:1.2rem;font-weight:800;margin-bottom:10px;}
+.level{font-size:1rem;margin-bottom:10px;color:#666;}
+.mission-box{background:var(--mint);padding:15px;border-radius:var(--radius);color:#1d1b23;margin-bottom:10px;font-weight:700;box-shadow:0 3px 10px rgba(163,247,191,0.4);}
+button{border:none;background:linear-gradient(90deg,var(--pink),var(--mint));color:#fff;font-weight:800;padding:10px 25px;border-radius:var(--radius);font-size:1rem;cursor:pointer;transition:var(--transition);box-shadow:0 6px 14px rgba(255,184,210,0.4);}
+button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(255,184,210,0.5);}
+.fans{margin-top:20px;background:var(--pink);padding:12px;border-radius:var(--radius);color:#fff;font-weight:700;display:inline-block;box-shadow:0 4px 10px rgba(255,184,210,0.4);}
+.theme-select{margin:10px 0;}
+.history{margin-top:20px;width:100%;max-width:520px;}
+.history h3{text-align:center;margin-bottom:8px;}
+ul{list-style:none;padding:0;}
+li{background:#fff;margin-bottom:8px;padding:10px;border-radius:var(--radius);box-shadow:0 3px 6px rgba(0,0,0,0.05);}
+footer{margin-top:30px;font-size:0.8rem;color:#999;}
+.confetti{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;}
+.piece{position:absolute;width:8px;height:8px;background:var(--mint);border-radius:50%;animation:fall 2s linear forwards;}
+@keyframes fall{to{transform:translateY(300px) rotate(720deg);opacity:0;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌱 ECO IDOL 🌟</h1>
+  <h2>나, 지구를 구하는 스타</h2>
+</header>
+
+<div class="video-container">
+  <iframe src="https://www.youtube.com/embed/gSJPn44ML10" title="ECO IDOL Video" frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
+<div class="theme-select">
+  🎨 테마 선택:
+  <select id="themeSelect">
+    <option value="default">러블리</option>
+    <option value="neon">네온</option>
+    <option value="space">우주</option>
+  </select>
+</div>
+
+<div class="stage">
+  <div class="idol" id="idol">🧚‍♀️</div>
+  <div class="score">팬 포인트 💚 <span id="score">0</span></div>
+  <div class="level" id="level">레벨 1</div>
+  <div class="mission-box" id="mission">🎯 오늘의 미션 불러오는 중...</div>
+  <button id="completeBtn">미션 완료!</button>
+  <div class="fans" id="fans">팬 수: 0명</div>
+  <div class="confetti" id="confetti"></div>
+</div>
+
+<section class="history">
+  <h3>📜 나의 미션 기록</h3>
+  <ul id="historyList"></ul>
+</section>
+
+<footer>© 2025 ECO IDOL · Save Earth, Earn Love</footer>
+
+<script>
+const missions=[
+ "텀블러로 음료 사기 💧","대중교통 이용 🚇","불필요한 불 끄기 💡",
+ "리필용 세제 사용 🧴","잔반 없이 식사 🍚","분리수거 챌린지 ♻️",
+ "친구에게 환경 앱 추천 💬","중고거래로 물건 나누기 🛍️","재활용품으로 작품 만들기 🎨"
+];
+const idol=document.getElementById('idol'),
+ missionBox=document.getElementById('mission'),
+ scoreEl=document.getElementById('score'),
+ fansEl=document.getElementById('fans'),
+ btn=document.getElementById('completeBtn'),
+ confetti=document.getElementById('confetti'),
+ levelEl=document.getElementById('level'),
+ historyList=document.getElementById('historyList'),
+ themeSel=document.getElementById('themeSelect');
+let score=0,fans=0,level=1;
+
+function newMission(){
+ const random=missions[Math.floor(Math.random()*missions.length)];
+ missionBox.textContent="🎯 오늘의 미션: "+random;
+}
+function celebrate(){
+ for(let i=0;i<25;i++){
+  const p=document.createElement('div');
+  p.classList.add('piece');
+  p.style.left=Math.random()*100+"%";
+  p.style.background=Math.random()>0.5?"var(--mint)":"var(--pink)";
+  p.style.animationDelay=Math.random()+"s";
+  confetti.appendChild(p);
+  setTimeout(()=>p.remove(),2000);
+ }
+}
+function updateLevel(){
+ level=Math.floor(score/50)+1;
+ levelEl.textContent="레벨 "+level;
+}
+function addHistory(text){
+ const li=document.createElement('li');
+ li.textContent=text;
+ historyList.prepend(li);
+}
+btn.addEventListener('click',()=>{
+ idol.classList.add('jump');setTimeout(()=>idol.classList.remove('jump'),400);
+ let base=10+Math.floor(Math.random()*5);
+ if(Math.random()<0.2){base+=15;alert("보너스 포인트! ✨");}
+ score+=base;
+ fans+=Math.floor(Math.random()*20)+10;
+ scoreEl.textContent=score;
+ fansEl.textContent=`팬 수: ${fans}명`;
+ updateLevel();
+ celebrate();
+ const done=missionBox.textContent.replace("🎯","✅");
+ addHistory(done);
+ newMission();
+ const audio=new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");audio.play();
+});
+themeSel.addEventListener('change',()=>{
+ switch(themeSel.value){
+  case"neon":
+   document.body.style.background="linear-gradient(180deg,#222,#0ff)";
+   document.body.style.color="#fff";break;
+  case"space":
+   document.body.style.background="linear-gradient(180deg,#2b1055,#7597de)";
+   document.body.style.color="#fff";break;
+  default:
+   document.body.style.background="linear-gradient(180deg,#ffeef6,#fafff3)";
+   document.body.style.color="var(--dark)";
+ }
+});
+newMission();
+</script>
+</body>
+</html>
